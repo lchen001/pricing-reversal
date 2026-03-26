@@ -157,7 +157,7 @@ if page == "🔄 Pricing Reversal":
 
     # Weight slider: composite listed price = w * input_price + (1-w) * output_price
     w = st.slider(
-        "Input price weight (listed price = w × input $/MTok + (1−w) × output $/MTok)",
+        "Input price weight (listed price = w × input \\$/MTok + (1−w) × output \\$/MTok)",
         min_value=0.0,
         max_value=1.0,
         value=0.5,
@@ -265,7 +265,45 @@ if page == "🔄 Pricing Reversal":
         )
 
         # ==============================================================
-        # CHART 1: Cost Ratio vs Listed Price Ratio
+        # CHART 1: Actual Cost side-by-side (original bar chart)
+        # ==============================================================
+        st.subheader("Actual Cost per Dataset")
+        fig = go.Figure()
+        fig.add_trace(
+            go.Bar(
+                x=df["Dataset"],
+                y=df[f"Actual {sn_a} ($)"],
+                name=sn_a,
+                marker_color="#1f77b4",
+            )
+        )
+        fig.add_trace(
+            go.Bar(
+                x=df["Dataset"],
+                y=df[f"Actual {sn_b} ($)"],
+                name=sn_b,
+                marker_color="#ff7f0e",
+            )
+        )
+        for _, row in df[df["Reversal"]].iterrows():
+            fig.add_annotation(
+                x=row["Dataset"],
+                y=max(row[f"Actual {sn_a} ($)"], row[f"Actual {sn_b} ($)"]),
+                text="⚠️ reversal",
+                showarrow=False,
+                yshift=12,
+                font=dict(size=12),
+            )
+        fig.update_layout(
+            barmode="group",
+            height=400,
+            margin=dict(t=40, b=0),
+            yaxis_title="Actual Cost ($)",
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        # ==============================================================
+        # CHART 2: Cost Ratio vs Listed Price Ratio
         # This is the key chart — shows the gap between listed price
         # ranking and actual cost ranking at a glance.
         # ==============================================================
@@ -320,44 +358,6 @@ if page == "🔄 Pricing Reversal":
             showlegend=False,
         )
         st.plotly_chart(fig_ratio, use_container_width=True)
-
-        # ==============================================================
-        # CHART 2: Actual Cost side-by-side (original bar chart)
-        # ==============================================================
-        st.subheader("Actual Cost per Dataset")
-        fig = go.Figure()
-        fig.add_trace(
-            go.Bar(
-                x=df["Dataset"],
-                y=df[f"Actual {sn_a} ($)"],
-                name=sn_a,
-                marker_color="#1f77b4",
-            )
-        )
-        fig.add_trace(
-            go.Bar(
-                x=df["Dataset"],
-                y=df[f"Actual {sn_b} ($)"],
-                name=sn_b,
-                marker_color="#ff7f0e",
-            )
-        )
-        for _, row in df[df["Reversal"]].iterrows():
-            fig.add_annotation(
-                x=row["Dataset"],
-                y=max(row[f"Actual {sn_a} ($)"], row[f"Actual {sn_b} ($)"]),
-                text="⚠️ reversal",
-                showarrow=False,
-                yshift=12,
-                font=dict(size=12),
-            )
-        fig.update_layout(
-            barmode="group",
-            height=400,
-            margin=dict(t=40, b=0),
-            yaxis_title="Actual Cost ($)",
-        )
-        st.plotly_chart(fig, use_container_width=True)
 
         # ==============================================================
         # Detail table
