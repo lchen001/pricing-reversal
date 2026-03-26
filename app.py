@@ -28,7 +28,7 @@ EXP_CONFIG_PATH = os.path.join(BASE, "constant", "experiment_config.json")
 
 @st.cache_data
 def load_all():
-    """Load all consolidated data + configs once."""
+    """Load all consolidated data + configs once (text fields stripped to save memory)."""
     with open(MODEL_INFO_PATH) as f:
         model_info = json.load(f)
     with open(EXP_CONFIG_PATH) as f:
@@ -49,15 +49,33 @@ def load_all():
     model_list = [m["model_name"] for m in exp_config["models"]]
     all_model_names = [m["model_name"] for m in model_info["models"]]
 
+    # Text fields to strip from in-memory data (loaded on demand from disk)
+    _TEXT_FIELDS = {"origin_query", "prompt", "raw_output", "prediction", "ground_truth", "extra_fields"}
+
     # Load consolidated data into a dict keyed by (dataset, model)
+    # Store file paths for on-demand text loading
     data = {}
+    file_paths = {}
     for fpath in sorted(glob.glob(os.path.join(DATA_DIR, "*.json"))):
         with open(fpath) as f:
             d = json.load(f)
         key = (d["dataset_name"], d["model_name"])
+        file_paths[key] = fpath
+        # Keep only a short preview per record; strip large text fields
+        for rec in d["records"]:
+            rec["_preview"] = (rec.get("origin_query", rec.get("prompt", "")) or "")[:80]
+            for field in _TEXT_FIELDS:
+                rec.pop(field, None)
         data[key] = d
 
-    return data, pricing, short_names, ds_config, model_list, all_model_names
+    return data, pricing, short_names, ds_config, model_list, all_model_names, file_paths
+
+
+def load_full_records(file_path):
+    """Load a single JSON file from disk with all text fields (not cached globally)."""
+    with open(file_path) as f:
+        d = json.load(f)
+    return {r["index"]: r for r in d["records"]}
 
 
 @st.cache_data
@@ -103,7 +121,7 @@ st.set_page_config(
     layout="wide",
 )
 
-data, pricing, short_names, ds_config, model_list, all_model_names = load_all()
+data, pricing, short_names, ds_config, model_list, all_model_names, file_paths = load_all()
 
 datasets = sorted(set(k[0] for k in data.keys()))
 models_in_data = sorted(set(k[1] for k in data.keys()))
@@ -489,7 +507,7 @@ elif page == "🔍 Per-Query Deep Dive":
     # Build a preview map
     query_preview = {}
     for r in records:
-        text = r.get("origin_query", r.get("prompt", ""))[:80]
+        text = r.get("_preview", "")[:80]
         query_preview[r["index"]] = f"Q{r['index']}: {text}..."
 
     qi = st.selectbox(
@@ -515,8 +533,8 @@ elif page == "🔍 Per-Query Deep Dive":
                 "Completion Tokens": rec["completion_tokens"],
                 "Cost ($)": rec["cost"],
                 "Score": rec["score"],
-                "Prediction": str(rec.get("prediction", ""))[:100],
-                "Ground Truth": str(rec.get("ground_truth", ""))[:100],
+                "Prediction": "",
+                "Ground Truth": "",
             }
         )
 
@@ -567,27 +585,31 @@ elif page == "🔍 Per-Query Deep Dive":
             hide_index=True,
         )
 
-        # Show the query text
-        sample_rec = next(
-            r for r in data[sample_key]["records"] if r["index"] == qi
-        )
-        with st.expander("Show full query text"):
-            st.text(sample_rec.get("origin_query", sample_rec.get("prompt", "")))
-
-        # Show each model's response
+        # Show the query text & model responses (load full text on demand)
         st.subheader("Model Responses")
+        full_records_cache = {}
         for _, row in df.iterrows():
             mname = row["Model"]
             mkey = row["model_name"]
-            d = data.get((ds_choice, mkey))
-            if d is None:
+            fpath = file_paths.get((ds_choice, mkey))
+            if fpath is None:
                 continue
-            rec = next((r for r in d["records"] if r["index"] == qi), None)
-            if rec is None:
+            if mkey not in full_records_cache:
+                full_records_cache[mkey] = load_full_records(fpath)
+            full_rec = full_records_cache[mkey].get(qi)
+            if full_rec is None:
                 continue
+            rec = next((r for r in data[(ds_choice, mkey)]["records"] if r["index"] == qi), None)
             with st.expander(f"{mname}  —  tokens: {rec.get('prompt_tokens',0):,} prompt / {rec.get('thinking_tokens',0):,} thinking / {rec.get('completion_tokens',0):,} completion  |  cost: ${rec.get('cost',0):.6f}  |  score: {rec.get('score','N/A')}"):
-                raw = rec.get("raw_output", rec.get("prediction", ""))
+                raw = full_rec.get("raw_output", full_rec.get("prediction", ""))
                 st.text(raw if raw else "(no response recorded)")
+
+        # Show full query text from the first model
+        first_model_key = df.iloc[0]["model_name"]
+        if first_model_key in full_records_cache:
+            full_sample = full_records_cache[first_model_key].get(qi, {})
+            with st.expander("Show full query text"):
+                st.text(full_sample.get("origin_query", full_sample.get("prompt", "")))
 
 # ===================================================================
 # PAGE 4: Query-Level Comparison
@@ -663,7 +685,7 @@ elif page == "⚔️ Query-Level Comparison":
                 f"Score {sn_a}": ra["score"],
                 f"Score {sn_b}": rb["score"],
                 "Reversal": reversal,
-                "Preview": (ra.get("origin_query", ra.get("prompt", "")))[:60],
+                "Preview": ra.get("_preview", "")[:60],
             }
         )
 
@@ -806,17 +828,20 @@ elif page == "⚔️ Query-Level Comparison":
         chosen_q = st.selectbox("Select a query to inspect", query_options, key="qlc_drill")
         row = df[df["Query"] == chosen_q].iloc[0]
 
-        # query text
-        rec_a = recs_a.get(chosen_q)
-        rec_b = recs_b.get(chosen_q)
-        sample_rec = rec_a or rec_b
-        if sample_rec:
+        # Load full text on demand for drill-down
+        full_a = load_full_records(file_paths[(ds_choice, model_a)]).get(chosen_q, {})
+        full_b = load_full_records(file_paths[(ds_choice, model_b)]).get(chosen_q, {})
+
+        sample_full = full_a or full_b
+        if sample_full:
             with st.expander("Show full query text", expanded=False):
-                st.text(sample_rec.get("origin_query", sample_rec.get("prompt", "")))
+                st.text(sample_full.get("origin_query", sample_full.get("prompt", "")))
 
         # side-by-side responses
+        rec_a = recs_a.get(chosen_q)
+        rec_b = recs_b.get(chosen_q)
         col_left, col_right = st.columns(2)
-        for col, label, rec in [(col_left, sn_a, rec_a), (col_right, sn_b, rec_b)]:
+        for col, label, rec, full_rec in [(col_left, sn_a, rec_a, full_a), (col_right, sn_b, rec_b, full_b)]:
             with col:
                 st.markdown(f"**{label}**")
                 if rec:
@@ -827,7 +852,7 @@ elif page == "⚔️ Query-Level Comparison":
                         f"Cost: **${rec.get('cost',0):.6f}** &nbsp;|&nbsp; "
                         f"Score: **{rec.get('score','N/A')}**"
                     )
-                    raw = rec.get("raw_output", rec.get("prediction", ""))
+                    raw = full_rec.get("raw_output", full_rec.get("prediction", "")) if full_rec else ""
                     st.text_area("Response", value=raw if raw else "(no response)", height=300, key=f"qlc_resp_{label}", disabled=True)
                 else:
                     st.info("No data")
