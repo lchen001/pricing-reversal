@@ -121,13 +121,14 @@ Each file in `data/consolidated/` is a JSON object with:
 
 ### Installation
 
-Requires **Python 3.9+** and [uv](https://docs.astral.sh/uv/).
+Requires **Python 3.9+**.
 
 ```bash
 git clone https://github.com/lchen001/pricing-reversal
 cd pricing-reversal
-uv venv && source .venv/bin/activate
-uv pip install -r requirements.txt
+conda create -n price-reversal python=3.12
+conda activate price-reversal
+pip install -r requirements.txt
 ```
 
 ### Interactive Cost Explorer
