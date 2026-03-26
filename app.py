@@ -151,26 +151,36 @@ if page == "🔄 Pricing Reversal":
         inp, out = pricing[model]
         return w * inp + (1 - w) * out
 
+    # Initialize defaults in session state (avoids index reset on rerun)
+    if "reversal_model_a" not in st.session_state:
+        st.session_state["reversal_model_a"] = (
+            "gemini-3-flash-preview"
+            if "gemini-3-flash-preview" in models_in_data
+            else models_in_data[0]
+        )
+    if "reversal_model_b" not in st.session_state:
+        default_b = "gpt-5.2-high" if "gpt-5.2-high" in models_in_data else models_in_data[0]
+        if default_b == st.session_state["reversal_model_a"] and len(models_in_data) > 1:
+            default_b = [m for m in models_in_data if m != st.session_state["reversal_model_a"]][0]
+        st.session_state["reversal_model_b"] = default_b
+
     col1, col2 = st.columns(2)
     with col1:
         model_a = st.selectbox(
             "Model A",
             models_in_data,
-            index=models_in_data.index("gemini-3-flash-preview")
-            if "gemini-3-flash-preview" in models_in_data
-            else 0,
-            format_func=lambda x: f"{sn(short_names, x)}  (${composite_price(x):.2f}/MTok)",
+            format_func=lambda x: sn(short_names, x),
             key="reversal_model_a",
         )
     with col2:
         avail_b = [m for m in models_in_data if m != model_a]
+        # Ensure stored value is still valid after model_a changes
+        if st.session_state.get("reversal_model_b") not in avail_b:
+            st.session_state["reversal_model_b"] = avail_b[0] if avail_b else None
         model_b = st.selectbox(
             "Model B",
             avail_b,
-            index=avail_b.index("gpt-5.2-high")
-            if "gpt-5.2-high" in avail_b
-            else 0,
-            format_func=lambda x: f"{sn(short_names, x)}  (${composite_price(x):.2f}/MTok)",
+            format_func=lambda x: sn(short_names, x),
             key="reversal_model_b",
         )
 
