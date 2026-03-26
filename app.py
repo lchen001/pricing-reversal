@@ -134,6 +134,17 @@ logo_path = os.path.join(BASE, "asset", "logo.png")
 if os.path.exists(logo_path):
     st.sidebar.image(logo_path, width=120)
 st.sidebar.title("Price Reversal Explorer")
+st.sidebar.caption(
+    "Cheaper API price ≠ cheaper to use. "
+    "We evaluate 8 frontier reasoning models across 9 tasks and find that "
+    "in 21.8% of comparisons, the cheaper-listed model actually costs more, "
+    "because thinking tokens vary up to 860% across models and dominate actual costs."
+)
+st.sidebar.markdown(
+    "📄 [Paper](https://arxiv.org/abs/2603.23971) · "
+    "💻 [GitHub](https://github.com/lchen001/pricing-reversal)"
+)
+st.sidebar.divider()
 page = st.sidebar.radio(
     "Navigate",
     [
