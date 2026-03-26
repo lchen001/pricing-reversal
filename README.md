@@ -6,7 +6,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2603.23971-b31b1b.svg)](https://arxiv.org/abs/2603.23971)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://lchen001-pricing-reversal.streamlit.app)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://price-reversal.streamlit.app)
 
 This repository contains the data and code for our paper:
 
@@ -134,7 +134,7 @@ pip install -r requirements.txt
 
 ### Interactive Cost Explorer
 
-**[Launch the app online](https://lchen001-pricing-reversal.streamlit.app)** — no installation needed.
+**[Launch the app online](https://price-reversal.streamlit.app)** — no installation needed.
 
 Or run locally:
 
