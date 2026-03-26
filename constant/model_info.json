@@ -1,0 +1,146 @@
+{
+  "_metadata": {
+    "description": "API pricing table for 8 target models used in ThinkingTax evaluation",
+    "currency": "USD",
+    "unit": "per 1M tokens (MTok)",
+    "last_updated": "2026-02-28",
+    "sources": [
+      "https://developers.openai.com/api/docs/pricing",
+      "https://platform.claude.com/docs/en/about-claude/pricing",
+      "https://ai.google.dev/gemini-api/docs/pricing",
+      "https://platform.moonshot.ai/docs/pricing/chat",
+      "https://platform.minimax.io/docs/guides/pricing-paygo"
+    ]
+  },
+  "models": [
+    {
+      "model_name": "gpt-5.2-high",
+      "short_name": "GPT-5.2",
+      "provider": "OpenAI",
+      "api_model_id": "gpt-5.2",
+      "input_price_per_MTok": 1.75,
+      "cached_input_price_per_MTok": 0.175,
+      "output_price_per_MTok": 14.00,
+      "batch_input_price_per_MTok": null,
+      "batch_output_price_per_MTok": null,
+      "context_window": 1048576,
+      "notes": "Same model/pricing as gpt-5.2; 'high' refers to reasoning_effort='high' parameter which increases thinking token usage. Reasoning tokens are billed as output tokens."
+    },
+    {
+      "model_name": "gpt-5-mini",
+      "short_name": "GPT-5 Mini",
+      "provider": "OpenAI",
+      "api_model_id": "gpt-5-mini",
+      "input_price_per_MTok": 0.25,
+      "cached_input_price_per_MTok": 0.025,
+      "output_price_per_MTok": 2.00,
+      "batch_input_price_per_MTok": null,
+      "batch_output_price_per_MTok": null,
+      "context_window": 1048576,
+      "notes": "Faster, cheaper version of GPT-5 for well-defined tasks. Reasoning tokens billed as output tokens."
+    },
+    {
+      "model_name": "gemini-3.1-pro-preview",
+      "short_name": "Gemini 3.1 Pro",
+      "provider": "Google",
+      "api_model_id": "gemini-3.1-pro-preview",
+      "input_price_per_MTok": 2.00,
+      "input_price_per_MTok_long": 4.00,
+      "cached_input_price_per_MTok": 0.20,
+      "cached_input_price_per_MTok_long": 0.40,
+      "cache_storage_per_MTok_per_hour": 4.50,
+      "output_price_per_MTok": 12.00,
+      "output_price_per_MTok_long": 18.00,
+      "batch_input_price_per_MTok": null,
+      "batch_output_price_per_MTok": null,
+      "context_window": 1048576,
+      "notes": "Standard pricing for prompts <= 200k tokens; '_long' prices for prompts > 200k tokens. Output price INCLUDES thinking tokens. Not available on free tier."
+    },
+    {
+      "model_name": "gemini-3-flash-preview",
+      "short_name": "Gemini 3 Flash",
+      "provider": "Google",
+      "api_model_id": "gemini-3-flash-preview",
+      "input_price_per_MTok": 0.50,
+      "cached_input_price_per_MTok": 0.05,
+      "cache_storage_per_MTok_per_hour": 1.00,
+      "output_price_per_MTok": 3.00,
+      "batch_input_price_per_MTok": null,
+      "batch_output_price_per_MTok": null,
+      "context_window": 1048576,
+      "notes": "Output price INCLUDES thinking tokens. Free tier available with limited rate. Audio input priced at $1.00/MTok."
+    },
+    {
+      "model_name": "claude-opus-4.6-thinking",
+      "short_name": "Claude Opus 4.6",
+      "provider": "Anthropic",
+      "api_model_id": "claude-opus-4-6",
+      "input_price_per_MTok": 5.00,
+      "cached_input_write_price_per_MTok": 6.25,
+      "cached_input_write_1hr_price_per_MTok": 10.00,
+      "cached_input_read_price_per_MTok": 0.50,
+      "output_price_per_MTok": 25.00,
+      "batch_input_price_per_MTok": 2.50,
+      "batch_output_price_per_MTok": 12.50,
+      "context_window": 200000,
+      "context_window_beta": 1000000,
+      "notes": "Same model/pricing as claude-opus-4.6; 'thinking' refers to extended thinking mode enabled. Thinking/reasoning tokens billed at standard output token rate ($25/MTok). Cache write 5-min = 1.25x base, 1-hour = 2x base; cache read = 0.1x base."
+    },
+    {
+      "model_name": "claude-haiku-4.5",
+      "short_name": "Claude Haiku 4.5",
+      "provider": "Anthropic",
+      "api_model_id": "claude-haiku-4-5-20251001",
+      "input_price_per_MTok": 1.00,
+      "cached_input_write_price_per_MTok": 1.25,
+      "cached_input_write_1hr_price_per_MTok": 2.00,
+      "cached_input_read_price_per_MTok": 0.10,
+      "output_price_per_MTok": 5.00,
+      "batch_input_price_per_MTok": 0.50,
+      "batch_output_price_per_MTok": 2.50,
+      "context_window": 200000,
+      "notes": "Fastest Claude model with near-frontier intelligence. Max output 64K tokens. Supports extended thinking."
+    },
+    {
+      "model_name": "kimi-k2.5",
+      "short_name": "Kimi K2.5",
+      "provider": "Moonshot AI",
+      "api_model_id": "kimi-k2.5",
+      "input_price_per_MTok": 0.60,
+      "cached_input_price_per_MTok": 0.10,
+      "output_price_per_MTok": 3.00,
+      "batch_input_price_per_MTok": null,
+      "batch_output_price_per_MTok": null,
+      "context_window": 262144,
+      "notes": "Kimi's most versatile model. Native multimodal architecture supporting vision+text input, thinking/non-thinking modes. Supports automatic context caching. Chinese site pricing: Input ¥4.00/MTok, Cache ¥0.70/MTok, Output ¥21.00/MTok."
+    },
+    {
+      "model_name": "MiniMax-M2.5",
+      "short_name": "MiniMax-M2.5",
+      "provider": "MiniMax",
+      "api_model_id": "MiniMax-M2.5",
+      "input_price_per_MTok": 0.30,
+      "cached_input_read_price_per_MTok": 0.03,
+      "cached_input_write_price_per_MTok": 0.375,
+      "output_price_per_MTok": 1.20,
+      "batch_input_price_per_MTok": null,
+      "batch_output_price_per_MTok": null,
+      "context_window": 1048576,
+      "notes": "MiniMax flagship text model. Also available as MiniMax-M2.5-highspeed at 2x price (Input $0.60, Output $2.40)."
+    }
+  ],
+  "pricing_summary_table": {
+    "description": "Quick reference: Input / Output price per 1M tokens (USD)",
+    "columns": ["Model", "Provider", "Input $/MTok", "Cached Input $/MTok", "Output $/MTok"],
+    "rows": [
+      ["GPT-5.2",       "OpenAI",      1.75,  0.175, 14.00],
+      ["GPT-5-mini",   "OpenAI",      0.25,  0.025,  2.00],
+      ["Gem-3.1-Pro",  "Google",      2.00,  0.20,  12.00],
+      ["Gem-3-Flash",  "Google",      0.50,  0.05,   3.00],
+      ["Opus-4.6",     "Anthropic",   5.00,  0.50,  25.00],
+      ["Haiku-4.5",    "Anthropic",   1.00,  0.10,   5.00],
+      ["Kimi-K2.5",    "Moonshot AI", 0.60,  0.10,   3.00],
+      ["MiniMax-M2.5", "MiniMax",     0.30,  0.03,   1.20]
+    ]
+  }
+}

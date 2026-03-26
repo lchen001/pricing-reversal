@@ -1,0 +1,46 @@
+% Table 1: Per-Model MAE Comparison (Absolute Cost)
+\begin{table}[t]
+\centering
+\caption{MAE of absolute cost estimation per model ($K{=}5$, test ratio$=$0.2). Costs in USD.}
+\label{tab:absolute-cost-mae}
+\begin{tabular}{lcc}
+\toprule
+Model & Mean Baseline & Embedding + KNN \\
+\midrule
+GPT-5.2 & 0.0490 & \textbf{0.0458} \\
+GPT-5 Mini & 0.0039 & \textbf{0.0027} \\
+Gemini 3.1 Pro & 0.1117 & \textbf{0.0941} \\
+Gemini 3 Flash & 0.0555 & \textbf{0.0344} \\
+Claude Opus 4.6 & 0.0721 & \textbf{0.0520} \\
+Claude Haiku 4.5 & 0.0023 & \textbf{0.0013} \\
+Kimi K2.5 & 0.0233 & \textbf{0.0138} \\
+MiniMax-M2.5 & 0.0008 & \textbf{0.0006} \\
+\midrule
+Average & 0.0398 & \textbf{0.0306} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Table 2: Per-Dataset MAE Comparison (Absolute Cost)
+\begin{table}[t]
+\centering
+\caption{Per-dataset MAE of absolute cost estimation (USD).}
+\label{tab:absolute-cost-mae-dataset}
+\begin{tabular}{lccc}
+\toprule
+Dataset & $N$ & Mean Baseline & Embedding + KNN \\
+\midrule
+aime-hybrid & 15 & \textbf{0.0235} & 0.0436 \\
+arc-agi-v1 & 81 & 0.0689 & \textbf{0.0583} \\
+arenahard-test & 149 & \textbf{0.0284} & 0.0306 \\
+gpqa-test & 37 & \textbf{0.0248} & 0.0292 \\
+hle-test & 393 & 0.0596 & \textbf{0.0543} \\
+livecodebench-test & 201 & 0.0415 & \textbf{0.0342} \\
+livemathbench-test & 29 & \textbf{0.0300} & 0.0352 \\
+mmlupro-test_3000 & 574 & 0.0308 & \textbf{0.0237} \\
+simpleqa-test & 816 & 0.0368 & \textbf{0.0200} \\
+\midrule
+Overall & 2295 & 0.0398 & \textbf{0.0306} \\
+\bottomrule
+\end{tabular}
+\end{table}

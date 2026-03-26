@@ -1,0 +1,47 @@
+% Table 1: Per-Model MAE Comparison
+\begin{table}[t]
+\centering
+\caption{MAE of relative cost estimation per model (reference: MiniMax-M2.5, $K{=}5$, test ratio$=$0.2).}
+\label{tab:relative-cost-mae}
+\begin{tabular}{lcc}
+\toprule
+Model & Pricing Baseline & Embedding + KNN \\
+\midrule
+GPT-5.2 & \textbf{19.73} & 23.42 \\
+GPT-5 Mini & 1.64 & \textbf{1.59} \\
+Gemini 3.1 Pro & \textbf{55.60} & 82.40 \\
+Gemini 3 Flash & 28.21 & \textbf{23.32} \\
+Claude Opus 4.6 & 27.62 & \textbf{27.13} \\
+Claude Haiku 4.5 & 3.00 & \textbf{1.08} \\
+Kimi K2.5 & 9.12 & \textbf{6.61} \\
+\textbf{MiniMax-M2.5} & 0.00 & 0.00 \\
+\midrule
+Average & \textbf{18.11} & 20.69 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Table 2: Per-Dataset MAE Comparison
+\begin{table}[t]
+\centering
+\caption{Per-dataset MAE of relative cost estimation.}
+\label{tab:relative-cost-mae-dataset}
+\begin{tabular}{lccc}
+\toprule
+Dataset & $N$ & Pricing Baseline & Embedding + KNN \\
+\midrule
+aime-hybrid & 16 & \textbf{10.52} & 18.66 \\
+arc-agi-v1 & 82 & 23.02 & \textbf{15.24} \\
+arenahard-test & 147 & \textbf{12.51} & 17.35 \\
+gpqa-test & 36 & \textbf{11.43} & 11.54 \\
+hle-test & 379 & 29.76 & \textbf{22.70} \\
+livecodebench-test & 199 & 20.55 & \textbf{16.27} \\
+livemathbench-test & 17 & \textbf{7.65} & 12.70 \\
+mmlupro-test_3000 & 587 & \textbf{10.37} & 12.55 \\
+simpleqa-test & 833 & \textbf{18.61} & 28.65 \\
+tau2-test & 54 & 21.74 & \textbf{15.25} \\
+\midrule
+Overall & 2350 & \textbf{18.11} & 20.69 \\
+\bottomrule
+\end{tabular}
+\end{table}
