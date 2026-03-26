@@ -160,6 +160,7 @@ if page == "🔄 Pricing Reversal":
             if "gemini-3-flash-preview" in models_in_data
             else 0,
             format_func=lambda x: f"{sn(short_names, x)}  (${composite_price(x):.2f}/MTok)",
+            key="reversal_model_a",
         )
     with col2:
         avail_b = [m for m in models_in_data if m != model_a]
@@ -170,6 +171,7 @@ if page == "🔄 Pricing Reversal":
             if "gpt-5.2-high" in avail_b
             else 0,
             format_func=lambda x: f"{sn(short_names, x)}  (${composite_price(x):.2f}/MTok)",
+            key="reversal_model_b",
         )
 
     price_a = composite_price(model_a)
@@ -186,11 +188,10 @@ if page == "🔄 Pricing Reversal":
         st.metric(f"{sn_b} listed price", f"${price_b:.2f}/MTok")
     with pcol3:
         if price_a != price_b:
-            ratio_text = (
-                f"{sn_a} is {price_b/price_a:.1f}× cheaper"
-                if price_a < price_b
-                else f"{sn_b} is {price_a/price_b:.1f}× cheaper"
-            )
+            if price_a < price_b:
+                ratio_text = f"{sn_a} costs {price_b/price_a:.1f}× less"
+            else:
+                ratio_text = f"{sn_b} costs {price_a/price_b:.1f}× less"
             st.metric("Listed price verdict", ratio_text)
         else:
             st.metric("Listed price verdict", "Same price")
